@@ -69,12 +69,12 @@ export default {
       if (!isAdminAuthorized(request, env.ADMIN_TOKEN)) {
         return new Response("Unauthorized", { status: 401 });
       }
-      if (pathname === "/admin/emails" && method === "GET")               return handleAdminEmails(url, env);
-      if (pathname === "/admin/rules"  && method === "GET")               return handleAdminRulesGet(url, env);
-      if (pathname === "/admin/rules"  && method === "POST")              return handleAdminRulesPost(request, env);
-      if (pathname.startsWith("/admin/rules/") && method === "DELETE")    return handleAdminRulesDelete(pathname, env);
-      if (pathname === "/admin/whitelist" && method === "GET")            return handleAdminWhitelistGet(url, env);
-      if (pathname === "/admin/whitelist" && method === "POST")           return handleAdminWhitelistPost(request, env);
+      if (pathname === "/admin/emails" && method === "GET") return handleAdminEmails(url, env);
+      if (pathname === "/admin/rules" && method === "GET") return handleAdminRulesGet(url, env);
+      if (pathname === "/admin/rules" && method === "POST") return handleAdminRulesPost(request, env);
+      if (pathname.startsWith("/admin/rules/") && method === "DELETE") return handleAdminRulesDelete(pathname, env);
+      if (pathname === "/admin/whitelist" && method === "GET") return handleAdminWhitelistGet(url, env);
+      if (pathname === "/admin/whitelist" && method === "POST") return handleAdminWhitelistPost(request, env);
       if (pathname.startsWith("/admin/whitelist/") && method === "DELETE") return handleAdminWhitelistDelete(pathname, env);
     }
 
@@ -85,7 +85,7 @@ export default {
     // 定时器触发：清理超过 48 小时的邮件数据
     // 48 hours = 48 * 60 * 60 * 1000 = 172800000 毫秒
     const expirationTime = Date.now() - 172800000;
-    
+
     ctx.waitUntil(
       env.DB.prepare("DELETE FROM emails WHERE received_at < ?")
         .bind(expirationTime)
@@ -653,7 +653,7 @@ data.results: 命中结果对象序列 [{ rule_id: 1, value: "123", remark: "备
       <footer class="max-w-5xl mx-auto px-4 py-6 text-xs text-slate-400">
         <div class="flex items-center justify-between border-t border-white/10 pt-4">
           <span>© 2026 Temp Mail Admin</span>
-          <a class="text-slate-300 hover:text-slate-100" href="https://github.com/beyoug" target="_blank" rel="noreferrer">GitHub</a>
+          <a class="text-slate-300 hover:text-slate-100" href="https://github.com/beyoug/temp-mail-console" target="_blank" rel="noreferrer">GitHub</a>
         </div>
       </footer>
     </div>
