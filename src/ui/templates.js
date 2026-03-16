@@ -99,8 +99,20 @@ export function renderHtml(PAGE_SIZE, RULES_PAGE_SIZE) {
 
         <section v-if="activeTab === 'emails'" class="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-2xl shadow-sm dark:shadow-xl dark:shadow-black/20 overflow-hidden backdrop-blur-sm">
           <div class="p-5 border-b border-slate-200 dark:border-white/5 flex items-center justify-between bg-slate-50 dark:bg-white/[0.01]">
-            <div>
+            <div class="flex items-center gap-4">
               <h2 class="text-sm font-semibold text-slate-900 dark:text-white">收件箱</h2>
+              <!-- 域名筛选器 -->
+              <div v-if="availableDomains.length > 0" class="flex items-center gap-2 pl-4 border-l border-slate-200 dark:border-white/5">
+                <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">筛选域名</span>
+                <select 
+                  v-model="filterDomain" 
+                  @change="page=1;loadList()"
+                  class="bg-transparent text-[11px] font-medium text-slate-600 dark:text-slate-300 focus:outline-none cursor-pointer hover:text-indigo-600 dark:hover:text-white transition-colors"
+                >
+                  <option value="">全部域名</option>
+                  <option v-for="d in availableDomains" :key="d" :value="d">{{ d }}</option>
+                </select>
+              </div>
             </div>
             <div class="flex items-center gap-2 text-[11px]">
               <button class="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-white/5 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-600 dark:text-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" @click="prevPage" :disabled="page===1">上一页</button>
@@ -400,7 +412,8 @@ export function renderHtml(PAGE_SIZE, RULES_PAGE_SIZE) {
             newWhitelist: "", activeTab: "emails",
             adminToken: "", adminError: "", poller: null,
             expandedResults: {}, copyStatus: {}, isDark: true,
-            apiActive: true
+            apiActive: true,
+            availableDomains: [], filterDomain: ""
           };
         },
         computed: {
@@ -412,7 +425,7 @@ export function renderHtml(PAGE_SIZE, RULES_PAGE_SIZE) {
           this.isDark = document.documentElement.classList.contains('dark');
           this.adminToken = getCookieValue("admin_token");
           if (!this.adminToken) return;
-          this.loadList(); this.loadRules(); this.loadWhitelistData(); this.startPolling();
+          this.loadList(); this.loadRules(); this.loadWhitelistData(); this.loadDomains(); this.startPolling();
         },
         beforeUnmount() { this.stopPolling(); },
         methods: {
@@ -454,10 +467,16 @@ export function renderHtml(PAGE_SIZE, RULES_PAGE_SIZE) {
             }
           },
           async loadList() {
-            const payload = await this.requestJson("/admin/emails?page=" + this.page);
+            let url = "/admin/emails?page=" + this.page;
+            if (this.filterDomain) url += "&domain=" + this.filterDomain;
+            const payload = await this.requestJson(url);
             if (!payload || !payload.data) return;
             this.items = payload.data.items || [];
             this.total = payload.data.total || 0;
+          },
+          async loadDomains() {
+            const payload = await this.requestJson("/admin/domains");
+            if (payload && payload.data) this.availableDomains = payload.data.domains || [];
           },
           async loadRules() {
             const payload = await this.requestJson("/admin/rules?page=" + this.rulesPage);
