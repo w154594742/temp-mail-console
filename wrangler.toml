@@ -5,7 +5,7 @@ compatibility_date = "2024-11-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "temp-email-db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "1e14e0c7-f183-4bd4-a136-bc65e2320ffa"
 
 [triggers]
 crons = ["0 * * * *"] # 每小时执行一次，检查并清理超过48小时的数据
